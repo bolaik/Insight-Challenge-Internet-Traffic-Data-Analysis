@@ -12,34 +12,34 @@ The language used is Python3. Dependent libraries includes `re`, `datetime` and 
 
 ### Basic structure of the cleaned data
 
-- A list of individual logon records are generated, with each record as a python dictionary which includs the following features:
-    - <span style="color:blue">raw</span>: 199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 200 6245
-    - <span style="color:blue">host</span>: 199.72.81.55
-    - <span style="color:blue">time</span>: 01/Jul/1995:00:00:01 -0400
-    - <span style="color:blue">request</span>:[/history/apollo/]
-    - <span style="color:blue">code</span>: 200
-    - <span style="color:blue">bytes</span>: 6245
+- A list of individual login records are generated, with each record as a python dictionary which includes the following features:
+    - `raw`: 199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 200 6245
+    - `host`: 199.72.81.55
+    - `time`: 01/Jul/1995:00:00:01 -0400
+    - `request`:[/history/apollo/]
+    - `code`: 200
+    - `bytes`: 6245
 - A robust way of splitting each record is defined
     - original record is first splitted into 3 substrings, by <span style="color:red">"["</span> and <span style="color:red">"]"</span>
     - the substrings are further splitted by <span style="color:red">"[[:space:]]"</span>
-- Since the split on string is performed twice, the overall computational complexity is $2\times\text{size(log file)}$
+- Since the split on string is performed twice, the overall computational complexity is `2*size(log file)`
 - In general, the list of dictionaries functions the same way as a pandas data frame
 
 ### Generating rank lists: Host ID and Resources
 
-To generate a rank list of items of certain features from the clean data, another dictionary is created. The keys of the new dictionary correspond to unique items within that feature and the values indicate their times of appearance. The list of top-10 items are obtained by sorting the dictionary values in descending orders. The overall computation complexity is $O(n+n\text{log}(n))$.
+To generate a rank list of items of certain features from the clean data, another dictionary is created. The keys of the new dictionary correspond to unique items within that feature and the values indicate their times of appearance. The list of top-10 items are obtained by sorting the dictionary values in descending orders. The overall computation complexity is `O(n+nlog(n)`.
 
 ### Busiest 60-minute periods
 
-Two loops (mimic two pointers) are used to sweep the whole list of entries. The first loop goes over individual entries. The second loop searches the corresponding entry when the 60-minute time window ends. Since the second loop does not go over the whole list each time, the computation complexity is larger but close to $O(n)$ and less than $O(n^2)$.
+Two loops (mimic two pointers) are used to sweep the whole list of entries. The first loop goes over individual entries. The second loop searches the corresponding entry when the 60-minute time window ends. Since the second loop does not go over the whole list each time, the computation complexity is larger but close to `O(n)` and less than `O(n^2)`.
 
 ### Blocking items
 
-A <span style="color:red">while loop</span> and a variable <span style="color:red">count</span> are used to finish the task. We sweep the list with the while loop, and start to count when a failed login appears. If during the 20-seconds window, we obtain 3 blocked login, then we start blocking the subsequent logins (no matter if they are successful or not) within next 5-minute window. The list items that are already dealt with will be removed from the list after each iteration.
+A *while loop* and a variable *"count"* are used to finish the task. We sweep the list with the while loop, and start to count when a failed login appears. If during the 20-seconds window, we obtain 3 blocked login, then we start blocking the subsequent logins (no matter if they are successful or not) within next 5-minute window. The list items that are already dealt with will be removed from the list after each iteration.
 
 ### Additional features
 
-Feature 4 (Blocking items) has some drawbacks, that is if the blocked host is not logging in for the next 5 minutes, then there is no records of the blocking event. To compensate for that, one additional feature is generated (named <span style="color:red">blocking hosts</span>). This feature will give  a list of all the blocking events that indeed happened, with the corresponding host id and the time when blocking happens. An example is given in the following:
+Feature 4 (Blocking items) has some drawbacks, that is if the blocked host is not logging in for the next 5 minutes, then there is no records of the blocking event. To compensate for that, one additional feature is generated (named *blocked hosts*). This feature will give  a list of all the blocking events that indeed happened, with the corresponding host id and the time when blocking happens. An example is given in the following:
 
 e.g., `blocked_host.txt`:
 
