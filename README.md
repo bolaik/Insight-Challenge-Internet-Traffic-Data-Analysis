@@ -13,12 +13,12 @@ The language used is Python3. Dependent libraries includes `re`, `datetime` and 
 ### Basic structure of the cleaned data
 
 - A list of individual login records are generated, with each record as a python dictionary which includes the following features:
-    - `raw`: 199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 200 6245
-    - `host`: 199.72.81.55
-    - `time`: 01/Jul/1995:00:00:01 -0400
-    - `request`:[/history/apollo/]
-    - `code`: 200
-    - `bytes`: 6245
+    - **raw**: 199.72.81.55 - - [01/Jul/1995:00:00:01 -0400] "GET /history/apollo/ HTTP/1.0" 200 6245
+    - **host**: 199.72.81.55
+    - **time**: 01/Jul/1995:00:00:01 -0400
+    - **request**:[/history/apollo/]
+    - **code**: 200
+    - **bytes**: 6245
 - A robust way of splitting each record is defined
     - original record is first splitted into 3 substrings, by <span style="color:red">"["</span> and <span style="color:red">"]"</span>
     - the substrings are further splitted by <span style="color:red">"[[:space:]]"</span>
@@ -31,11 +31,11 @@ To generate a rank list of items of certain features from the clean data, anothe
 
 ### Busiest 60-minute periods
 
-Two loops (mimic two pointers) are used to sweep the whole list of entries. The first loop goes over individual entries. The second loop searches the corresponding entry when the 60-minute time window ends. Since the second loop does not go over the whole list each time, the computation complexity is larger but close to `O(n)` and less than `O(n^2)`.
+**Two loops (mimic two pointers)** are used to sweep the whole list of entries. The first loop goes over individual entries. The second loop searches the corresponding entry when the 60-minute time window ends. Since the second loop does not go over the whole list each time, the computation complexity is larger but close to `O(n)` and less than `O(n^2)`.
 
 ### Blocking items
 
-A *while loop* and a variable *"count"* are used to finish the task. We sweep the list with the while loop, and start to count when a failed login appears. If during the 20-seconds window, we obtain 3 blocked login, then we start blocking the subsequent logins (no matter if they are successful or not) within next 5-minute window. The list items that are already dealt with will be removed from the list after each iteration.
+A **while loop** and a variable **"count"** are used to finish the task. We sweep the list with the while loop, and start to count when a failed login appears. If during the 20-seconds window, we obtain 3 blocked login, then we start blocking the subsequent logins (no matter if they are successful or not) within next 5-minute window. The list items that are already dealt with will be removed from the list after each iteration.
 
 ### Additional features
 
